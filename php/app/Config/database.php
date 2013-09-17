@@ -84,10 +84,18 @@ class DATABASE_CONFIG {
         );
 
 	public function __construct() {
+        if(getenv("OPENSHIFT_MYSQL_DB_HOST")){
 	       $this->default['host']     = getenv("OPENSHIFT_MYSQL_DB_HOST");
 	       $this->default['port']     = getenv("OPENSHIFT_MYSQL_DB_PORT");
 	       $this->default['login']    = getenv("OPENSHIFT_MYSQL_DB_USERNAME");
 	       $this->default['password'] = getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
 	       $this->default['database'] = getenv("OPENSHIFT_APP_NAME");
+        } else {
+            $this->default['host']     = "localhost";
+            $this->default['port']     = "3307";
+            $this->default['login']    = "adminyPRVZNV";
+            $this->default['password'] = "MGLh--tXX4SC";
+            $this->default['database'] = "ecomart";
+        }
 	}
 }
