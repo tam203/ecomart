@@ -1,0 +1,36 @@
+.selection_view div.slider {
+    width: 80%;
+    display: inline-block;
+}
+
+.selection_view .item label {
+    display: none;
+}
+
+.selection_view .item .input {
+    display: inline-block;
+    width: 15%;
+    position: relative;
+    top: -0.2em;
+    margin-left: 0.4em;
+}
+.selection_view .item input {
+    border-radius: 4px;
+}
+
+input {
+    font-size: 16pt;
+}
+
+html, body {
+    font-size: 16pt;
+    font-family: arial, sans-serif;
+}
+
+fieldset {
+    margin-bottom: 2em;
+}
+
+fieldset legend {
+    font-size: 110%;
+}
