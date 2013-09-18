@@ -1,9 +1,9 @@
-<a href="<?php echo $this->html->url(array('action'=>'index', 'controller'=>'Experiments'));?>">
+<a href="experiments">
     Set up a new experiment
 </a>
 
 <br/>
 
-<a href="<?php echo $this->html->url(array('action'=>'start', 'controller'=>'Experiments', 2));?>">
+<a href="experiments/start/2">
     Try a example experiment
 </a>
