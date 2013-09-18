@@ -57,8 +57,8 @@ class ExperimentsController extends AppController {
 
     function save_selection(){
         foreach($this->data['ParticipantResult'] as $result){
-            $this->Experiment->ParticipantResult->create();
-            $this->Experiment->ParticipantResult->save( array('ParticipantResult'=>$result));
+            $this->Experiment->Participant->ParticipantResult->create();
+            $this->Experiment->Participant->ParticipantResult->save( array('ParticipantResult'=>$result));
         }
 
     }

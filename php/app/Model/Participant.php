@@ -5,4 +5,11 @@ class Participant extends AppModel {
             "className" => "Experiment"
         )
     );
+
+    public $hasMany = array(
+        "ParticipantResult" => array(
+            'className' => 'ParticipantResult'
+        )
+    );
+
 }

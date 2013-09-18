@@ -7,10 +7,6 @@ class Experiment extends AppModel {
 
         'Participant' => array(
             'className' => 'Participant'
-        ),
-
-        "ParticipantResult" => array(
-            'className' => 'ParticipantResult'
         )
     );
 }

@@ -21,7 +21,7 @@
             <div id="slider-<?php echo $id;?>" class="slider" style="display:none;" data-max="<?php echo $item['max_normalised_spend'];?>"></div>
             <?php echo $this->Form->input('ParticipantResult.'.$count.'.participant_id', array('type'=>'hidden', "value"=>$participant_id));  ?>
             <?php echo $this->Form->input('ParticipantResult.'.$count.'.shop_item_id', array('type'=>'hidden', 'value'=>$item['id']));  ?>
-            <?php echo $this->Form->input('ParticipantResult.'.$count.'.amount', array('id'=>$id, 'class'=>'itemSpend money', 'value'=>$item['normalised_value']));  ?>
+            <?php echo $this->Form->input('ParticipantResult.'.$count.'.amount', array('id'=>$id, 'type'=>'text', 'class'=>'itemSpend money', 'value'=>$item['normalised_value']));  ?>
             <?php foreach($item['ItemState'] as $state):?>
                 <div class="itemstate state-<?php echo $id;?>" data-min="<?php echo $state['normalised_min'];?>" data-max="<?php echo $state['normalised_max'];?>">
                     <h3><?php echo $state['name'];?></h3>
