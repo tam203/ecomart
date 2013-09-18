@@ -16,6 +16,7 @@
 }
 .selection_view .item input {
     border-radius: 4px;
+    width:100%;
 }
 
 input {
@@ -33,4 +34,18 @@ fieldset {
 
 fieldset legend {
     font-size: 110%;
+}
+
+.seleciondynamic fieldset.item {
+    float: left;
+    width: 65%;
+}
+
+.seleciondynamic div.overview {
+    float: right;
+    width: 25%;
+}
+
+.clrlft{
+    clear: left;
 }

@@ -55,13 +55,23 @@ class ExperimentsController extends AppController {
         }
     }
 
+    function save_selection(){
+        foreach($this->data['ParticipantResult'] as $result){
+            $this->Experiment->ParticipantResult->create();
+            $this->Experiment->ParticipantResult->save( array('ParticipantResult'=>$result));
+        }
+
+    }
+
     private function calculate_tax($income){
         return 2762 + 0.31 * $income;
     }
 
     private function init(){
         $this->layout = "experiment";
-        $this->Experiment->Participant->read(null, $this->getCurrentParticipantId());
+        $participant_id = $this->getCurrentParticipantId();
+        $this->set('participant_id', $participant_id);
+        $this->Experiment->Participant->read(null, $participant_id);
         $this->Experiment->read(null, $this->Experiment->Participant->field('experiment_id'));
     }
 

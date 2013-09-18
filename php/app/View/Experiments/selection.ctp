@@ -1,20 +1,27 @@
 <div class="selection_view">
 
-    <?php echo $this->Form->create('ParticipantResult', array('url'=>Router::normalize(array('controller'=>'Experiments','action'=>'save_selection'))));  ?>
-    <?php echo $this->Form->input('participant_id',array('type'=>'hidden'));  ?>
+    <?php echo $this->Form->create('ParticipantResult', array('id'=>'selectForm','url'=>Router::normalize(array('controller'=>'Experiments','action'=>'save_selection'))));  ?>
     <?php $count = 0;?>
-    <fieldset>
-        <legend>You tax spend</legend>
-        <em>Your current tax spend:</em><span>£<?php echo $total_tax;?></span><br/>
-        <em>The tax you are willing to spend:</em>£<span id="calc_total"><?php echo $total_tax;?></span>
-    </fieldset>
+    <div class="overview">
+        <fieldset >
+            <legend>You tax spend</legend>
+            <em>Your current tax spend:</em><span>£<?php echo $total_tax;?></span><br/>
+            <em>The tax you are willing to spend:</em>£<span id="calc_total"><?php echo $total_tax;?></span>
+
+        </fieldset>
+        <div id="states">
+            <h2>What this means</h2>
+        </div>
+
+    </div>
     <?php foreach($items as $item):?>
         <fieldset class="item">
             <legend><?php echo $item['name']?></legend>
             <?php $id = "amount_for_".$item['id'];?>
             <div id="slider-<?php echo $id;?>" class="slider" style="display:none;" data-max="<?php echo $item['max_normalised_spend'];?>"></div>
-            <?php echo $this->Form->input('ParticipantResult['.$count.'][shop_item_id]',array('type'=>'hidden', 'value'=>$item['id']));  ?>
-            <?php echo $this->Form->input('ParticipantResult['.$count.'][amount]',array('id'=>$id, 'class'=>'itemSpend money', 'value'=>$item['normalised_value']));  ?>
+            <?php echo $this->Form->input('ParticipantResult.'.$count.'.participant_id', array('type'=>'hidden', "value"=>$participant_id));  ?>
+            <?php echo $this->Form->input('ParticipantResult.'.$count.'.shop_item_id', array('type'=>'hidden', 'value'=>$item['id']));  ?>
+            <?php echo $this->Form->input('ParticipantResult.'.$count.'.amount', array('id'=>$id, 'class'=>'itemSpend money', 'value'=>$item['normalised_value']));  ?>
             <?php foreach($item['ItemState'] as $state):?>
                 <div class="itemstate state-<?php echo $id;?>" data-min="<?php echo $state['normalised_min'];?>" data-max="<?php echo $state['normalised_max'];?>">
                     <h3><?php echo $state['name'];?></h3>
@@ -27,74 +34,90 @@
         </fieldset>
         <?php $count++;?>
     <?php endforeach;?>
-    <?php echo $this->Form->end(); ?>
+    <div class="clrlft"></div>
+    <?php echo $this->Form->end("Submit"); ?>
+</div>
 
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <?php echo $this->Html->script('autoNumeric'); ?>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <script>
-        $(function() {
-            // hide stuff needed for non js only
-            $('.valid_statment').hide();
 
-            // display money nicely
-            $('input.money').autoNumeric('init',{aSign: '£'});
 
-            // set up the sliders
-            $( ".slider" ).each(function(index, ele){
-                var input = $('#'+ele.id.replace('slider-',''))
-                var min = 0;
-                var max = parseFloat($(ele).attr('data-max'));
-                var step = (max-min)/100
-                step = (step < 1) ? 0.1 : Math.floor(step);
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<?php echo $this->Html->script('autoNumeric'); ?>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script>
+    $(function() {
+        // hide/move now we know we support js only
+        $('.valid_statment').hide();
+        $('.itemstate').appendTo($('#states'));
+        $('.selection_view').addClass('seleciondynamic')
 
-                $(ele).show();
-                $(ele).slider({
-                    value: parseFloat($(input).autoNumeric('get')),
-                    min:min,
-                    max:max,
-                    step:step,
-                    slide: function( event, ui ) {
-                        input.autoNumeric('set', ui.value );
-                        updateTotal();
-                        toggleStates(input);
-                    }
-                });
 
-                input.change(function(event){
-                    var slider = $('#slider-' + event.target.id);
-                    $(slider).slider('value',  parseFloat($(event.target).val()));
-                    toggleStates(input)
-                });
+        // display money nicely
+        $('input.money').autoNumeric('init',{aSign: '£'});
 
-                toggleStates(input)
+        // set up the sliders
+        $( ".slider" ).each(function(index, ele){
+            var input = $('#'+ele.id.replace('slider-',''))
+            var min = 0;
+            var max = parseFloat($(ele).attr('data-max'));
+            var step = (max-min)/100
+            step = (step < 1) ? 0.1 : Math.floor(step);
 
+            $(ele).show();
+            $(ele).slider({
+                value: parseFloat($(input).autoNumeric('get')),
+                min:min,
+                max:max,
+                step:step,
+                slide: function( event, ui ) {
+                    input.autoNumeric('set', ui.value );
+                    updateTotal();
+                    toggleStates(input);
+                }
             });
+
+            input.change(function(event){
+                var slider = $('#slider-' + event.target.id);
+                $(slider).slider('value',  parseFloat($(event.target).val()));
+                toggleStates(input)
+            });
+
+            toggleStates(input)
 
         });
 
-        function updateTotal(){
-            var total=0;
+    });
+
+    function updateTotal(){
+        var total=0;
+        $('.itemSpend').each(function(i, ele){
+            total+= parseFloat($(ele).autoNumeric('get'));
+        })
+        $('#calc_total').html(total.toFixed(2))
+    }
+
+    function toggleStates(input){
+        var value = parseFloat($(input).autoNumeric('get'));
+
+        $('.state-'+$(input).attr('id')).each(function(i, ele){
+            var min = parseFloat($(ele).attr('data-min'));
+            var max = parseFloat($(ele).attr('data-max'));
+            var show = (value >= min && value < max);
+            if(show) {
+                $(ele).show();
+            } else {
+                $(ele).hide();
+            }
+        })
+
+        // On submit get rid of the currency formatting.
+        $('#selectForm').submit(function(){
             $('.itemSpend').each(function(i, ele){
-                total+= parseFloat($(ele).autoNumeric('get'));
-            })
-            $('#calc_total').html(total.toFixed(2))
-        }
+                $(ele).val($(ele).autoNumeric('get'));
+            })  ;
 
-        function toggleStates(input){
-            var value = parseFloat($(input).autoNumeric('get'));
+            return true;
+        });
+    }
+</script>
 
-            $('.state-'+$(input).attr('id')).each(function(i, ele){
-                var min = parseFloat($(ele).attr('data-min'));
-                var max = parseFloat($(ele).attr('data-max'));
-                var show = (value >= min && value < max);
-                if(show) {
-                    $(ele).show();
-                } else {
-                    $(ele).hide();
-                }
-            })
-        }
-    </script>
-</div>
