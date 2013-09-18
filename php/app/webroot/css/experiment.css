@@ -49,3 +49,7 @@ fieldset legend {
 .clrlft{
     clear: left;
 }
+
+.questions label{
+    display: block;
+}

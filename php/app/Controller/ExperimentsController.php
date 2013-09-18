@@ -1,12 +1,19 @@
 <?php
 
 class ExperimentsController extends AppController {
-    //var $scaffold;
+    var $scaffold;
 
     function start($experiment_id){
         $this->Experiment->read(null, $experiment_id);
         $this->createNewParticipant();
         $this->redirect(array('action' => 'household_income'));
+    }
+
+
+    function thank_you(){
+        $this->init();
+        $this->redirectIfNotInExperiment();
+
     }
 
     function selection(){
@@ -41,6 +48,27 @@ class ExperimentsController extends AppController {
         $this->set("items", $items);
     }
 
+    function follow_up_questions(){
+        $this->init();
+        $this->redirectIfNotInExperiment();
+        $spent = $this->Experiment->Participant->field('willing_to_pay');
+        $taxed = $this->Experiment->Participant->field('tax_paid');
+        $spent_more = $spent > $taxed;
+        $spent_less = $spent < $taxed;
+        $this->Experiment->Question->recursive = -1;
+        $questions = $this->Experiment->Question->find('all', array(
+            'conditions' => array(
+                'experiment_id' => $this->Experiment->id,
+                'OR' => array(
+                    'on_increase' =>  $spent_more,
+                    'on_decrease' =>  $spent_less
+                )
+            )
+        ));
+        $this->set("questions", $questions);
+
+    }
+
     function household_income(){
         $this->init();
         $this->redirectIfNotInExperiment();
@@ -56,10 +84,17 @@ class ExperimentsController extends AppController {
     }
 
     function save_selection(){
+        $this->init();
+        $this->redirectIfNotInExperiment();
+        $willing_to_pay = 0;
         foreach($this->data['ParticipantResult'] as $result){
+            $willing_to_pay += (float) $result['amount'];
             $this->Experiment->Participant->ParticipantResult->create();
             $this->Experiment->Participant->ParticipantResult->save( array('ParticipantResult'=>$result));
         }
+        $this->Experiment->Participant->set('willing_to_pay', $willing_to_pay);
+        $this->Experiment->Participant->save();
+        $this->redirect(array('action' => 'follow_up_questions'));
 
     }
 
